@@ -1,6 +1,6 @@
 jogodots
 =======================================
-Dots board game to play in server/client mode develop in 2003.
+Dots board game to play in server/client mode developed in 2003.
 
 TOC
 ---
