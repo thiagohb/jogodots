@@ -1,1 +1,1 @@
-java -classpath .\classes\ jogodots.Controlador
+java -classpath .\bin\ jogodots.Controlador

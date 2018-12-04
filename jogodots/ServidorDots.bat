@@ -1,1 +1,1 @@
-java -classpath .\classes\ jogodots.FrameServidorDots
+java -classpath .\bin\ jogodots.FrameServidorDots
