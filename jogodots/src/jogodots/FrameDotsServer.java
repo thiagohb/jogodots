@@ -7,12 +7,12 @@ import javax.swing.border.*;
 import java.net.*;
 import java.io.*;
 
-public class FrameServidorDots extends JFrame implements Runnable{
+public class FrameDotsServer extends JFrame implements Runnable{
 
-   private Jogador jogadores[];
+   private Player jogadores[];
    private ServerSocket servidor;
    private int jogadorCorrente;
-   private Tabuleiro tabuleiro;
+   private Board tabuleiro;
    private int linha, coluna;
 
    private Thread t1;
@@ -47,7 +47,7 @@ public class FrameServidorDots extends JFrame implements Runnable{
   JButton jbSair = new JButton();
 
   //Construct the frame
-  public FrameServidorDots() {
+  public FrameDotsServer() {
     enableEvents(AWTEvent.WINDOW_EVENT_MASK);
     try {
       jbInit();
@@ -59,7 +59,7 @@ public class FrameServidorDots extends JFrame implements Runnable{
   //Component initialization
   private void jbInit() throws Exception  {
 
-    jogadores = new Jogador[2];
+    jogadores = new Player[2];
     jogadorCorrente = 0;
 
     contentPane = (JPanel) this.getContentPane();
@@ -188,17 +188,17 @@ public class FrameServidorDots extends JFrame implements Runnable{
 
       try{
 
-        jogadores[i] = new Jogador(servidor.accept(), this, i);
+        jogadores[i] = new Player(servidor.accept(), this, i);
         jogadores[i].start();
 
         if (i == 0){
-          coluna = linha = jogadores[0].perguntaTamanho();
-          tabuleiro = new Tabuleiro(linha, coluna);
+          coluna = linha = jogadores[0].getBoardSize();
+          tabuleiro = new Board(linha, coluna);
         }
 
         else{
 
-          jogadores[1].setTamanho(linha);
+          jogadores[1].setBoardSize(linha);
         }
 
         display(i);
@@ -231,7 +231,7 @@ public class FrameServidorDots extends JFrame implements Runnable{
       try{
         servidor.close();
         jogadorCorrente = 0;
-        tabuleiro.limpaTabuleiro();
+        tabuleiro.initBoard();
       }
       catch (Exception e){
 
@@ -304,7 +304,7 @@ public class FrameServidorDots extends JFrame implements Runnable{
   }
 
   //Determina se um movimento é válido.
-  public synchronized boolean movimentoValido(int linha, int coluna, int jogador,
+  public synchronized boolean isValidMove(int linha, int coluna, int jogador,
                                               char matriz){
 
     while (jogador != jogadorCorrente){
@@ -322,33 +322,33 @@ public class FrameServidorDots extends JFrame implements Runnable{
 
       if (matriz == 'H') {
 
-        tabuleiro.setHorizontais(linha, coluna);
+        tabuleiro.setHorizontalDash(linha, coluna);
 
-        if(!(tabuleiro.fechouQuadrado(linha, coluna, jogadorCorrente,'H'))){
+        if(!(tabuleiro.markDash(linha, coluna, jogadorCorrente,'H'))){
           jogadorCorrente = (jogadorCorrente + 1) % 2;
-          jogadores[jogadorCorrente].jogadaAdversario(linha, coluna, matriz);
+          jogadores[jogadorCorrente].opponentMove(linha, coluna, matriz);
           notify();
         }
 
         else{
             int jogadorAdversario = (jogadorCorrente + 1) % 2;
-            jogadores[jogadorAdversario].jogadaAdversario(linha, coluna, matriz);
+            jogadores[jogadorAdversario].opponentMove(linha, coluna, matriz);
         }
       }
 
       else {
 
-        tabuleiro.setVerticais(linha, coluna);
+        tabuleiro.setVerticalDash(linha, coluna);
 
-        if(!(tabuleiro.fechouQuadrado(linha, coluna, jogadorCorrente,'V'))){
+        if(!(tabuleiro.markDash(linha, coluna, jogadorCorrente,'V'))){
           jogadorCorrente = (jogadorCorrente + 1) % 2;
-          jogadores[jogadorCorrente].jogadaAdversario(linha, coluna, matriz);
+          jogadores[jogadorCorrente].opponentMove(linha, coluna, matriz);
           notify();
        }
 
        else{
            int jogadorAdversario = (jogadorCorrente + 1) % 2;
-           jogadores[jogadorAdversario].jogadaAdversario(linha, coluna, matriz);
+           jogadores[jogadorAdversario].opponentMove(linha, coluna, matriz);
        }
 
       }
@@ -360,19 +360,19 @@ public class FrameServidorDots extends JFrame implements Runnable{
   }
 
   public boolean ocupado(int linha, int coluna, char matriz){
-    if (matriz == 'H') return tabuleiro.getHorizontais(linha, coluna);
-    else return tabuleiro.getVerticais(linha, coluna);
+    if (matriz == 'H') return tabuleiro.getHorizontalDash(linha, coluna);
+    else return tabuleiro.getVerticalDash(linha, coluna);
   }
 
-   public boolean fechado(int linha, int coluna, char matriz){
-      return tabuleiro.fechado(linha, coluna, matriz);
+   public boolean markAsClosed(int linha, int coluna, char matriz){
+      return tabuleiro.isClosed(linha, coluna, matriz);
   }
 
   public boolean gameOver(){
 
-      if (tabuleiro.completo()){
+      if (tabuleiro.isBoardCompleted()){
         for (int i = 0; i < 2; i++)
-           jogadores[i].avisaGameOver();
+           jogadores[i].sendGameOver();
 
         restartServidor();
         return true;
@@ -386,7 +386,7 @@ public class FrameServidorDots extends JFrame implements Runnable{
     for (int i = 0; i < 2; i++){
 
       try{
-        jogadores[i].avisaFinalizou();
+        jogadores[i].sendGameHasFinished();
       }
       catch(Exception e){
       }
@@ -441,6 +441,6 @@ public class FrameServidorDots extends JFrame implements Runnable{
        catch(Exception e) {
         e.printStackTrace();
        }
-       new FrameServidorDots();
+       new FrameDotsServer();
   }
 }

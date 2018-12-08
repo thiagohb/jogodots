@@ -4,10 +4,10 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class FrameJogo extends JFrame {
+public class FrameGame extends JFrame {
 
   int linhas, colunas;
-  Controlador controlador;
+  Controller controlador;
 
   JPanel contentPane;
   BorderLayout borderLayout1 = new BorderLayout();
@@ -26,7 +26,7 @@ public class FrameJogo extends JFrame {
   };
 
   //Construct the frame
-  public FrameJogo(int linhas, int colunas, Controlador c) {
+  public FrameGame(int linhas, int colunas, Controller c) {
     enableEvents(AWTEvent.WINDOW_EVENT_MASK);
     try {
       this.linhas = linhas;
@@ -101,7 +101,7 @@ public class FrameJogo extends JFrame {
 
    if (controlador.getMinhaVez()){
 
-    Ponto p = avaliaCoordenadas(e.getX(), e.getY());
+    Dot p = avaliaCoordenadas(e.getX(), e.getY());
 
     Dimension d = jpPontos.getSize();
     double altura = d.getHeight()/(linhas+2);
@@ -128,11 +128,11 @@ public class FrameJogo extends JFrame {
         if (deltaY < 0){
 
           if ((-deltaX) > (-deltaY)) {//Linha H a esq
-            controlador.setHorizontais(linhaTabela, colunaTabela - 1);
+            controlador.markHorizontalDash(linhaTabela, colunaTabela - 1);
             controlador.setOutput(linhaTabela, colunaTabela - 1, 'H');
           }
           else{ //Linha V acima
-            controlador.setVerticais(linhaTabela - 1, colunaTabela);
+            controlador.markVerticalDash(linhaTabela - 1, colunaTabela);
             controlador.setOutput(linhaTabela - 1, colunaTabela, 'V');
           }
         }
@@ -140,11 +140,11 @@ public class FrameJogo extends JFrame {
         //a esquerda ou abaixo
         else {
           if ((-deltaX) > deltaY) {//Linha H esq
-            controlador.setHorizontais(linhaTabela - 1, colunaTabela - 1);
+            controlador.markHorizontalDash(linhaTabela - 1, colunaTabela - 1);
             controlador.setOutput(linhaTabela - 1, colunaTabela - 1, 'H');
           }
           else {//Linha V abaixo
-            controlador.setVerticais(linhaTabela - 1, colunaTabela);
+            controlador.markVerticalDash(linhaTabela - 1, colunaTabela);
             controlador.setOutput(linhaTabela - 1, colunaTabela, 'V');
           }
         }
@@ -158,11 +158,11 @@ public class FrameJogo extends JFrame {
         //a direita ou acima
         if (deltaY < 0){
           if (deltaX > (-deltaY)){// Linha H a dir
-            controlador.setHorizontais(linhaTabela, colunaTabela - 1);
+            controlador.markHorizontalDash(linhaTabela, colunaTabela - 1);
             controlador.setOutput(linhaTabela, colunaTabela - 1, 'H');
           }
           else { //Linha V acima
-            controlador.setVerticais(linhaTabela - 1, colunaTabela - 1);
+            controlador.markVerticalDash(linhaTabela - 1, colunaTabela - 1);
             controlador.setOutput(linhaTabela - 1, colunaTabela - 1, 'V');
 
           }
@@ -171,11 +171,11 @@ public class FrameJogo extends JFrame {
         //a direita ou abaixo
         else {
           if (deltaX > deltaY) {// Linha H a dir
-            controlador.setHorizontais(linhaTabela - 1, colunaTabela - 1);
+            controlador.markHorizontalDash(linhaTabela - 1, colunaTabela - 1);
             controlador.setOutput(linhaTabela - 1, colunaTabela - 1, 'H');
           }
           else {//Linha V abaixo
-            controlador.setVerticais(linhaTabela - 1, colunaTabela-1);
+            controlador.markVerticalDash(linhaTabela - 1, colunaTabela-1);
             controlador.setOutput(linhaTabela - 1, colunaTabela - 1, 'V');
           }
         }
@@ -205,38 +205,38 @@ public class FrameJogo extends JFrame {
     //Desenha as linhas horizontais
     for (double i = largura; i <= colunas*largura; i += largura)
       for (double j = altura; j <= (linhas+1)*altura; j += altura)
-        if (controlador.getHorizontais(((int)j/((int)altura))-1, ((int)i/((int)largura))-1))
+        if (controlador.isHorizontalDash(((int)j/((int)altura))-1, ((int)i/((int)largura))-1))
           g.drawLine((int)i, (int)(j+2), (int)(i+largura), (int)(j+2));
 
 
     //Desenha as linhas verticais
     for (double i = largura; i <= (colunas+1)*largura; i += largura)
       for (double j = altura; j <= linhas*altura; j += altura)
-        if (controlador.getVerticais(((int)j/((int)altura))-1, ((int)i/((int)largura))-1))
+        if (controlador.isVerticalDash(((int)j/((int)altura))-1, ((int)i/((int)largura))-1))
           g.drawLine((int)i+2, (int)j, (int)(i+2), (int)(j+altura));
 
 
     //Desenha os marcadores
     for (double i = largura; i <= colunas*largura; i += largura)
       for (double j = altura; j <= linhas*altura; j += altura)
-        if (controlador.getMarcadores(((int)j/((int)altura))-1, ((int)i/((int)largura))-1) == 1){
+        if (controlador.getMarkers(((int)j/((int)altura))-1, ((int)i/((int)largura))-1) == 1){
           g.setColor(Color.red);
           g.drawOval((int)(i + espHoriz), (int)(j + espVert), ((int)largura) - (espHoriz + espHoriz/3), ((int)altura) - (espVert + espVert/3));
         }
-        else if (controlador.getMarcadores(((int)j/((int)altura))-1, ((int)i/((int)largura))-1) == 2){
+        else if (controlador.getMarkers(((int)j/((int)altura))-1, ((int)i/((int)largura))-1) == 2){
           g.setColor(Color.blue);
           g.drawOval((int)(i + espHoriz), (int)(j + espVert), ((int)largura) - (espHoriz + espHoriz/3), ((int)altura) - (espVert + espVert/3));
         }
   }
 
-  Ponto avaliaCoordenadas(int x, int y){
+  Dot avaliaCoordenadas(int x, int y){
 
     Dimension d = jpPontos.getSize();
     double altura = d.getHeight()/(linhas+2);
     double largura = d.getWidth()/(colunas+2);
     double rx, ry;  //restos da divisão
     int dx, dy;     //parte inteira da divisão
-    Ponto p = new Ponto();
+    Dot p = new Dot();
 
     rx = ((double) x) % largura;
     ry = ((double) y) % altura;

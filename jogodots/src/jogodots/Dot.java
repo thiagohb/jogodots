@@ -1,13 +1,13 @@
 package jogodots;
 
-public class Ponto {
+public class Dot {
 
   int x, y;
 
-  public Ponto () {
+  public Dot () {
   }
 
-  public Ponto (int x, int y) {
+  public Dot (int x, int y) {
      this.x = x;
      this.y = y;
   }
