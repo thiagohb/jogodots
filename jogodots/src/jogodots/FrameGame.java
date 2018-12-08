@@ -6,7 +6,7 @@ import javax.swing.*;
 
 public class FrameGame extends JFrame {
 
-  int linhas, colunas;
+  int rows, columns;
   Controller controlador;
 
   JPanel contentPane;
@@ -26,12 +26,12 @@ public class FrameGame extends JFrame {
   };
 
   //Construct the frame
-  public FrameGame(int linhas, int colunas, Controller c) {
+  public FrameGame(int rows, int columns, Controller controller) {
     enableEvents(AWTEvent.WINDOW_EVENT_MASK);
     try {
-      this.linhas = linhas;
-      this.colunas = colunas;
-      this.controlador = c;
+      this.rows = rows;
+      this.columns = columns;
+      this.controlador = controller;
       jbInit();
     }
     catch(Exception e) {
@@ -99,13 +99,13 @@ public class FrameGame extends JFrame {
   //Eventos do MOUSE
   void jpPontos_mouseClicked(MouseEvent e) {
 
-   if (controlador.getMinhaVez()){
+   if (controlador.isMyTurn()){
 
     Dot p = avaliaCoordenadas(e.getX(), e.getY());
 
     Dimension d = jpPontos.getSize();
-    double altura = d.getHeight()/(linhas+2);
-    double largura = d.getWidth()/(colunas+2);
+    double altura = d.getHeight()/(rows +2);
+    double largura = d.getWidth()/(columns +2);
 
     //Testa se a posição clicada está dentro dos limites do jogo
     if ((e.getX() < largura) || (e.getX() > (d.getWidth()-largura)) ||
@@ -191,34 +191,34 @@ public class FrameGame extends JFrame {
   void desenha(Graphics g){
 
     Dimension d = jpPontos.getSize();
-    double altura = d.getHeight()/(linhas+2);
-    double largura = d.getWidth()/(colunas+2);
+    double altura = d.getHeight()/(rows +2);
+    double largura = d.getWidth()/(columns +2);
     int espVert = (int)altura/5;
     int espHoriz = (int)largura/5;
 
 
     //Desenha os pontos
-    for (double i = largura; i <= ((colunas+1)*largura) + (largura/10); i += largura)
-      for (double j = altura; j <= ((linhas+1)*altura) + (altura/10); j += altura)
+    for (double i = largura; i <= ((columns +1)*largura) + (largura/10); i += largura)
+      for (double j = altura; j <= ((rows +1)*altura) + (altura/10); j += altura)
         g.fillOval((int)i, (int)j, 5, 5);
 
-    //Desenha as linhas horizontais
-    for (double i = largura; i <= colunas*largura; i += largura)
-      for (double j = altura; j <= (linhas+1)*altura; j += altura)
+    //Desenha as rows horizontais
+    for (double i = largura; i <= columns *largura; i += largura)
+      for (double j = altura; j <= (rows +1)*altura; j += altura)
         if (controlador.isHorizontalDash(((int)j/((int)altura))-1, ((int)i/((int)largura))-1))
           g.drawLine((int)i, (int)(j+2), (int)(i+largura), (int)(j+2));
 
 
-    //Desenha as linhas verticais
-    for (double i = largura; i <= (colunas+1)*largura; i += largura)
-      for (double j = altura; j <= linhas*altura; j += altura)
+    //Desenha as rows verticais
+    for (double i = largura; i <= (columns +1)*largura; i += largura)
+      for (double j = altura; j <= rows *altura; j += altura)
         if (controlador.isVerticalDash(((int)j/((int)altura))-1, ((int)i/((int)largura))-1))
           g.drawLine((int)i+2, (int)j, (int)(i+2), (int)(j+altura));
 
 
     //Desenha os marcadores
-    for (double i = largura; i <= colunas*largura; i += largura)
-      for (double j = altura; j <= linhas*altura; j += altura)
+    for (double i = largura; i <= columns *largura; i += largura)
+      for (double j = altura; j <= rows *altura; j += altura)
         if (controlador.getMarkers(((int)j/((int)altura))-1, ((int)i/((int)largura))-1) == 1){
           g.setColor(Color.red);
           g.drawOval((int)(i + espHoriz), (int)(j + espVert), ((int)largura) - (espHoriz + espHoriz/3), ((int)altura) - (espVert + espVert/3));
@@ -232,8 +232,8 @@ public class FrameGame extends JFrame {
   Dot avaliaCoordenadas(int x, int y){
 
     Dimension d = jpPontos.getSize();
-    double altura = d.getHeight()/(linhas+2);
-    double largura = d.getWidth()/(colunas+2);
+    double altura = d.getHeight()/(rows +2);
+    double largura = d.getWidth()/(columns +2);
     double rx, ry;  //restos da divisão
     int dx, dy;     //parte inteira da divisão
     Dot p = new Dot();
@@ -244,10 +244,10 @@ public class FrameGame extends JFrame {
     dx = (int)((double) x / largura);
     dy = (int)((double)y / altura);
 
-    if ((rx >= largura / 2.0) && (dx <= linhas)) p.setX((dx+1)*((int)largura));
+    if ((rx >= largura / 2.0) && (dx <= rows)) p.setX((dx+1)*((int)largura));
     else  p.setX(dx*((int)largura));
 
-    if ((ry >= altura / 2.0) && (dy <= colunas)) p.setY((dy+1)*((int)altura));
+    if ((ry >= altura / 2.0) && (dy <= columns)) p.setY((dy+1)*((int)altura));
     else p.setY(dy*((int)altura));
 
     return p;
@@ -257,15 +257,15 @@ public class FrameGame extends JFrame {
        controlador.setOutput(-1,-1,'F');
   }
 
-  public void atualizaLabel(String s){
+  public void updateLabel(String s){
     jlMensagens.setText(s);
   }
 
-  public void atualizaTela(){
+  public void updateScreen(){
     jpPontos.repaint();
   }
-  public void setTamanho(int tamanho){
-    linhas = colunas = tamanho;
-    atualizaTela();
+  public void setBoardSize(int boardSize){
+    rows = columns = boardSize;
+    updateScreen();
   }
 }

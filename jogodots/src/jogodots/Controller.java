@@ -117,7 +117,7 @@ public class Controller implements Runnable{
        player = input.readInt();
        frameGame.setTitle("Jogo Dots! - Player " + (player + 1));
        myTurn = (player == 0 ? true : false);
-       frameGame.atualizaLabel("You are the player " + player);
+       frameGame.updateLabel("You are the player " + player);
 
 
     }
@@ -148,7 +148,7 @@ public class Controller implements Runnable{
     }
   }
 
-  //Processa as mensagens recebidas pelo cliente
+  // Process the messages recived by the clients.
   public void doMessage(String message){
 
     if (message.equals("Board size")){
@@ -165,31 +165,31 @@ public class Controller implements Runnable{
           // Size that the player has chosen
           if (size != null) rows = columns = Integer.parseInt(size);
 
-          //Se o jogador não escolher um tamanho, este terá um tamanho padrão igual a 8
+          // The size is 5 if the player does not type the size of the board
           else rows = columns = 5;
 
           if ((rows < 2) || (rows > 15)){
            running = true;
-           JOptionPane.showMessageDialog(null, "Tamanho inválido!","Jogo Dots!",
+           JOptionPane.showMessageDialog(null, "Invalid board size!","Jogo Dots!",
 	                            JOptionPane.INFORMATION_MESSAGE);
 
           }
           else {
             output.writeInt(rows);
             board = new Board(rows, columns);
-            frameGame.setTamanho(rows);
+            frameGame.setBoardSize(rows);
             running = false;
           }
         }
 
         catch(IOException e){
-          JOptionPane.showMessageDialog(null, "Ocorreu um erro durante a conexão!","Jogo Dots!",
+          JOptionPane.showMessageDialog(null, "Connection error!","Jogo Dots!",
 	                              JOptionPane.INFORMATION_MESSAGE);
           System.exit(1);
         }
 
         catch(NumberFormatException e){
-          JOptionPane.showMessageDialog(null, "Formato de número inválido!","Jogo Dots!",
+          JOptionPane.showMessageDialog(null, "Invalid size number!","Jogo Dots!",
 	                            JOptionPane.INFORMATION_MESSAGE);
 
           running = true;
@@ -207,7 +207,7 @@ public class Controller implements Runnable{
           rows = columns = input.readInt();
 
           board = new Board(rows, columns);
-          frameGame.setTamanho(rows);
+          frameGame.setBoardSize(rows);
           flag = false;
         }
         catch(IOException e){
@@ -220,71 +220,71 @@ public class Controller implements Runnable{
     if (message.equals("Valid move")){
 
       try{
-        boolean fechou = input.readBoolean();
+        boolean closedNewCell = input.readBoolean();
 
-        if (fechou){
+        if (closedNewCell){
          myTurn = true;
-         frameGame.atualizaLabel("Fechou quadrado, jogue outra vez!");
+         frameGame.updateLabel("Closed new square. Play again!");
         }
 
         else{
-           frameGame.atualizaLabel("Movimento válido, por favor espere!");
+           frameGame.updateLabel("Valid move, please wait!");
            myTurn = false;
         }
 
       }
 
       catch(IOException e){
-       JOptionPane.showMessageDialog(null, "Ocorreu um erro durante a conexão!","Jogo Dots!",
+       JOptionPane.showMessageDialog(null, "Connection error!","Jogo Dots!",
 	                            JOptionPane.INFORMATION_MESSAGE);
        System.exit(1);
       }
 
-      frameGame.atualizaTela();
+      frameGame.updateScreen();
     }
 
     else if (message.equals("Invalid move")){
             myTurn = true;
          }
 
-         else if (message.equals("Jogada do Adversário")){
+         else if (message.equals("Opponent move")){
 
                  try{
 
-                   int adversario = (player == 0 ? 1 : 0);
-                   char matriz = input.readChar();
-                   int linha = input.readInt();
-                   int coluna = input.readInt();
+                   int opponent = (player == 0 ? 1 : 0);
+                   char direction = input.readChar();
+                   int row = input.readInt();
+                   int column = input.readInt();
 
-                   if (matriz == 'H'){
-                      board.setHorizontalDash(linha, coluna);
+                   if (direction == 'H'){
+                      board.setHorizontalDash(row, column);
 
-                      if (board.markDash(linha, coluna, adversario, 'H')){
+                      if (board.markDash(row, column, opponent, 'H')){
                         myTurn = false;
-                        frameGame.atualizaLabel("Jogada do Adversário!");
+                        frameGame.updateLabel("Opponent turn!");
                       }
 
                       else{
                        myTurn = true;
-                       frameGame.atualizaLabel("Sua Vez!");
+                       frameGame.updateLabel("Your turn!");
                       }
                    }
 
                    else{
-                      board.setVerticalDash(linha, coluna);
+                      board.setVerticalDash(row, column);
 
-                      if (board.markDash(linha, coluna, adversario, 'V')){
+                      if (board.markDash(row, column, opponent, 'V')){
                         myTurn = false;
-                        frameGame.atualizaLabel("Jogada do Adversário!");
+                        frameGame.updateLabel("Opponent turn!");
                       }
 
                       else{
                         myTurn = true;
-                        frameGame.atualizaLabel("Sua Vez!");
+                        frameGame.updateLabel("Your turn!");
                       }
                    }
 
-                   frameGame.atualizaTela();
+                   frameGame.updateScreen();
                 }
 
                 catch(IOException e){
@@ -294,16 +294,16 @@ public class Controller implements Runnable{
 
          else if (message.equals("Game Over")){
 
-            int pontos1 = board.getNumberOfPoints(1);
-            int pontos2 = board.getNumberOfPoints(2);
-            String vencedor = "", output = "";
+            int player1NumberOfPoints = board.getNumberOfPoints(1);
+            int player2NumberOfPoints = board.getNumberOfPoints(2);
+            String winner = "", output = "";
 
-            if(pontos1 > pontos2) vencedor = "Vencedor: Jogador 1";
-            else if(pontos1 < pontos2) vencedor = "Vencedor: Jogador 2";
-            else vencedor = "Empate";
+            if(player1NumberOfPoints > player2NumberOfPoints) winner = "Winner: Player 1";
+            else if(player1NumberOfPoints < player2NumberOfPoints) winner = "Winner: Player 2";
+            else winner = "Draw";
 
-            output += " Placar Final:\n\n Jogador 1: " + pontos1 + " pontos\n" +
-                      " Jogador 2: " + pontos2 + " pontos\n\n " + vencedor;
+            output += " Final:\n\n Player 1: " + player1NumberOfPoints + " points\n" +
+                      " Player 2: " + player2NumberOfPoints + " points\n\n " + winner;
 
             JOptionPane.showMessageDialog(null, output,"Jogo Dots!",
 	                            JOptionPane.INFORMATION_MESSAGE);
@@ -314,37 +314,37 @@ public class Controller implements Runnable{
          }
          else if (message.equals("Waiting for the next player")){
             myTurn = false;
-            frameGame.atualizaLabel(message);
+            frameGame.updateLabel(message);
          }
          else if (message.equals("Finished")){
-            JOptionPane.showMessageDialog(null, "O jogo será finalizado!","Jogo Dots!",
+            JOptionPane.showMessageDialog(null, "The game has finished!","Jogo Dots!",
 	                            JOptionPane.INFORMATION_MESSAGE);
             frameGame.dispose();
             System.exit(0);
          }
-         else if (message.equals("Other player connected. Your turn.")){
+         else if (message.equals("Other player has connected. Your turn.")){
             myTurn = true;
-            frameGame.atualizaLabel(message);
+            frameGame.updateLabel(message);
          }
-         else frameGame.atualizaLabel(message);
+         else frameGame.updateLabel(message);
 
   }
 
-  //Manda para o jogador a jogada atual
-  public void setOutput(int linha, int coluna, char matriz){
+  // Send message to the other player
+  public void setOutput(int row, int column, char direction){
 
     if (myTurn){
 
       try{
-        output.writeChar(matriz);
-        output.writeInt(linha);
-        output.writeInt(coluna);
+        output.writeChar(direction);
+        output.writeInt(row);
+        output.writeInt(column);
         output.flush();
         myTurn = false;
       }
 
       catch(IOException e){
-       JOptionPane.showMessageDialog(null, "Ocorreu um erro durante a leitura!","Jogo Dots!",
+       JOptionPane.showMessageDialog(null, "Connection error!","Jogo Dots!",
 	                            JOptionPane.INFORMATION_MESSAGE);
        System.exit(1);
       }
@@ -353,8 +353,8 @@ public class Controller implements Runnable{
   }
 
 
-  //Retorna se é a vez do jogador
-  public boolean getMinhaVez(){
+  // Return if it is my turn
+  public boolean isMyTurn(){
     return myTurn;
   }
 
