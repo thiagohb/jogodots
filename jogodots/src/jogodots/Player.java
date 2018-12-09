@@ -72,7 +72,7 @@ public class Player extends Thread{
         catch (InterruptedException e){
 
         }
-        output.writeUTF("Other player connected. Your turn.");
+        output.writeUTF("Other player has connected. Your turn.");
       }
 
       //playing
