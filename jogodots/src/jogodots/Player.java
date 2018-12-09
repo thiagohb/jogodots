@@ -83,7 +83,7 @@ public class Player extends Thread{
 
         if (direction == 'F'){
           exit = true;
-          control.finalizou();
+          control.finish();
         }
 
         else{

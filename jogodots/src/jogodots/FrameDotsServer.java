@@ -9,42 +9,42 @@ import java.io.*;
 
 public class FrameDotsServer extends JFrame implements Runnable{
 
-   private Player jogadores[];
-   private ServerSocket servidor;
-   private int jogadorCorrente;
-   private Board tabuleiro;
-   private int linha, coluna;
+   private Player players[];
+   private ServerSocket server;
+   private int currentPlayer;
+   private Board board;
+   private int row, column;
 
-   private Thread t1;
+   private Thread thread;
 
-  JPanel contentPane;
-  TitledBorder titledBorder1;
-  BorderLayout borderLayout1 = new BorderLayout();
-  JPanel jpSul = new JPanel();
-  JButton jbDesconectar = new JButton();
-  JButton jbConectar = new JButton();
-  JPanel jpNorte = new JPanel();
-  BorderLayout borderLayout2 = new BorderLayout();
-  FlowLayout flowLayout1 = new FlowLayout();
-  TitledBorder titledBorder2;
-  JPanel jpCenter = new JPanel();
-  TitledBorder titledBorder3;
-  BorderLayout borderLayout3 = new BorderLayout();
-  JPanel jpNomes = new JPanel();
-  JPanel jpStatus = new JPanel();
-  GridLayout gridLayout1 = new GridLayout();
-  JLabel jlBranco = new JLabel();
-  JLabel jlBranco2 = new JLabel();
-  JLabel jlJogador2 = new JLabel();
-  JLabel jlJogador1 = new JLabel();
-  JLabel jlServidor = new JLabel();
-  GridLayout gridLayout2 = new GridLayout();
-  JLabel jlBranco3 = new JLabel();
-  JLabel jlBranco4 = new JLabel();
-  JLabel jlStatus2 = new JLabel();
-  JLabel jlStatus1 = new JLabel();
-  JLabel jlStatus = new JLabel();
-  JButton jbSair = new JButton();
+  private JPanel jpContent;
+  private TitledBorder titledBorder1;
+  private BorderLayout borderLayout1 = new BorderLayout();
+  private JPanel jpSouth = new JPanel();
+  private JButton jbDisconnect = new JButton();
+  private JButton jbConnect = new JButton();
+  private JPanel jpNorth = new JPanel();
+  private BorderLayout borderLayout2 = new BorderLayout();
+  private FlowLayout flowLayout1 = new FlowLayout();
+  private TitledBorder titledBorder2;
+  private JPanel jpCenter = new JPanel();
+  private TitledBorder titledBorder3;
+  private BorderLayout borderLayout3 = new BorderLayout();
+  private JPanel jpNames = new JPanel();
+  private JPanel jpStatus = new JPanel();
+  private GridLayout gridLayout1 = new GridLayout();
+  private JLabel jlEmpty1 = new JLabel();
+  private JLabel jlEmpty2 = new JLabel();
+  private JLabel jlPlayer2 = new JLabel();
+  private JLabel jlPlayer1 = new JLabel();
+  private JLabel jlServer = new JLabel();
+  private GridLayout gridLayout2 = new GridLayout();
+  private JLabel jlEmpty3 = new JLabel();
+  private JLabel jlEmpty4 = new JLabel();
+  private JLabel jlStatus2 = new JLabel();
+  private JLabel jlStatus1 = new JLabel();
+  private JLabel jlStatus = new JLabel();
+  private JButton jbExit = new JButton();
 
   //Construct the frame
   public FrameDotsServer() {
@@ -59,16 +59,16 @@ public class FrameDotsServer extends JFrame implements Runnable{
   //Component initialization
   private void jbInit() throws Exception  {
 
-    jogadores = new Player[2];
-    jogadorCorrente = 0;
+    players = new Player[2];
+    currentPlayer = 0;
 
-    contentPane = (JPanel) this.getContentPane();
+    jpContent = (JPanel) this.getContentPane();
     titledBorder1 = new TitledBorder("");
     titledBorder2 = new TitledBorder("");
     titledBorder3 = new TitledBorder("");
-    contentPane.setLayout(borderLayout1);
+    jpContent.setLayout(borderLayout1);
     this.setSize(new Dimension(310, 200));
-    this.setTitle("Servidor Dots!");
+    this.setTitle("Server Jogo Dots!");
 
      //Centraliza a janela
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -82,69 +82,69 @@ public class FrameDotsServer extends JFrame implements Runnable{
     this.setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
     this.setVisible(true);
 
-    contentPane.setBorder(titledBorder1);
-    contentPane.setPreferredSize(new Dimension(200, 61));
-    jbDesconectar.setText("Desconectar");
-    jbDesconectar.addActionListener(new java.awt.event.ActionListener() {
+    jpContent.setBorder(titledBorder1);
+    jpContent.setPreferredSize(new Dimension(200, 61));
+    jbDisconnect.setText("Disconnect");
+    jbDisconnect.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        jbDesconectar_actionPerformed(e);
+        jbDisconnect_actionPerformed(e);
       }
     });
-    jbDesconectar.setEnabled(false);
-    jbConectar.setText("Conectar");
-    jbConectar.addActionListener(new java.awt.event.ActionListener() {
+    jbDisconnect.setEnabled(false);
+    jbConnect.setText("Connect");
+    jbConnect.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        jbConectar_actionPerformed(e);
+        jbConnect_actionPerformed(e);
       }
     });
-    jpSul.setLayout(flowLayout1);
-    jpNorte.setLayout(borderLayout2);
+    jpSouth.setLayout(flowLayout1);
+    jpNorth.setLayout(borderLayout2);
     jpCenter.setBorder(titledBorder3);
     jpCenter.setLayout(borderLayout3);
-    jpSul.setBorder(titledBorder1);
-    jpNomes.setLayout(gridLayout1);
+    jpSouth.setBorder(titledBorder1);
+    jpNames.setLayout(gridLayout1);
     gridLayout1.setRows(5);
-    jlJogador2.setFont(new java.awt.Font("Dialog", 1, 12));
-    jlJogador2.setText("Jogador 2: ");
-    jlJogador1.setFont(new java.awt.Font("Dialog", 1, 12));
-    jlJogador1.setText("Jogador 1: ");
-    jlServidor.setFont(new java.awt.Font("Dialog", 1, 12));
-    jlServidor.setText("Servidor:        ");
+    jlPlayer2.setFont(new java.awt.Font("Dialog", 1, 12));
+    jlPlayer2.setText("Player 2: ");
+    jlPlayer1.setFont(new java.awt.Font("Dialog", 1, 12));
+    jlPlayer1.setText("Player 1: ");
+    jlServer.setFont(new java.awt.Font("Dialog", 1, 12));
+    jlServer.setText("Server:        ");
     jpStatus.setLayout(gridLayout2);
     gridLayout2.setRows(5);
     jlStatus2.setFont(new java.awt.Font("Dialog", 1, 12));
     jlStatus2.setForeground(Color.red);
-    jlStatus2.setText("desconectado...");
+    jlStatus2.setText("disconnected.");
     jlStatus1.setFont(new java.awt.Font("Dialog", 1, 12));
     jlStatus1.setForeground(Color.red);
-    jlStatus1.setText("desconectado...");
+    jlStatus1.setText("disconnected.");
     jlStatus.setFont(new java.awt.Font("Dialog", 1, 12));
     jlStatus.setForeground(Color.red);
-    jlStatus.setText("desconectado...");
-    jbSair.setText("Sair");
-    jbSair.addActionListener(new java.awt.event.ActionListener() {
+    jlStatus.setText("disconnected.");
+    jbExit.setText("Exit");
+    jbExit.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        jbSair_actionPerformed(e);
+        jbExit_actionPerformed(e);
       }
     });
-    jpCenter.add(jpNomes,  BorderLayout.WEST);
+    jpCenter.add(jpNames,  BorderLayout.WEST);
     jpCenter.add(jpStatus, BorderLayout.CENTER);
-    jpSul.add(jbConectar, null);
-    contentPane.add(jpSul, BorderLayout.SOUTH);
-    jpSul.add(jbDesconectar, null);
-    jpSul.add(jbSair, null);
-    contentPane.add(jpNorte, BorderLayout.NORTH);
-    contentPane.add(jpCenter, BorderLayout.CENTER);
-    jpNomes.add(jlBranco, null);
-    jpNomes.add(jlServidor, null);
-    jpNomes.add(jlJogador1, null);
-    jpNomes.add(jlJogador2, null);
-    jpNomes.add(jlBranco2, null);
-    jpStatus.add(jlBranco3, null);
+    jpSouth.add(jbConnect, null);
+    jpContent.add(jpSouth, BorderLayout.SOUTH);
+    jpSouth.add(jbDisconnect, null);
+    jpSouth.add(jbExit, null);
+    jpContent.add(jpNorth, BorderLayout.NORTH);
+    jpContent.add(jpCenter, BorderLayout.CENTER);
+    jpNames.add(jlEmpty1, null);
+    jpNames.add(jlServer, null);
+    jpNames.add(jlPlayer1, null);
+    jpNames.add(jlPlayer2, null);
+    jpNames.add(jlEmpty2, null);
+    jpStatus.add(jlEmpty3, null);
     jpStatus.add(jlStatus, null);
     jpStatus.add(jlStatus1, null);
     jpStatus.add(jlStatus2, null);
-    jpStatus.add(jlBranco4, null);
+    jpStatus.add(jlEmpty4, null);
     show();
 
   }
@@ -156,49 +156,49 @@ public class FrameDotsServer extends JFrame implements Runnable{
     }
   }
 
-  void jbConectar_actionPerformed(ActionEvent e) {
+  void jbConnect_actionPerformed(ActionEvent e) {
 
-      //configura ServerSocket
+      // ServerSocket
       try{
-        servidor = new ServerSocket(5000, 2);
+        server = new ServerSocket(5000, 2);
       }
       catch (IOException e1){
-         JOptionPane.showMessageDialog(null, "Ocorreu um erro durante a conexão!","Jogo Dots!",
+         JOptionPane.showMessageDialog(null, "Connection error!","Jogo Dots!",
 	                            JOptionPane.INFORMATION_MESSAGE);
          System.exit(1);
       }
 
-      jlStatus.setText("conectado, esperando conexões...");
+      jlStatus.setText("connected, waiting for connections...");
       jlStatus.setFont(new java.awt.Font("Dialog", 1, 12));
       jlStatus.setForeground(Color.blue);
 
-      jbDesconectar.setEnabled(true);
-      jbConectar.setEnabled(false);
+      jbDisconnect.setEnabled(true);
+      jbConnect.setEnabled(false);
 
-      jbDesconectar.requestFocus();
+      jbDisconnect.requestFocus();
 
-       t1 = new Thread(this);
-       t1.start();
+       thread = new Thread(this);
+       thread.start();
 
   }
 
    public void run(){
 
-    for(int i = 0; i < jogadores.length; i++){
+    for(int i = 0; i < players.length; i++){
 
       try{
 
-        jogadores[i] = new Player(servidor.accept(), this, i);
-        jogadores[i].start();
+        players[i] = new Player(server.accept(), this, i);
+        players[i].start();
 
         if (i == 0){
-          coluna = linha = jogadores[0].getBoardSize();
-          tabuleiro = new Board(linha, coluna);
+          column = row = players[0].getBoardSize();
+          board = new Board(row, column);
         }
 
         else{
 
-          jogadores[1].setBoardSize(linha);
+          players[1].setBoardSize(row);
         }
 
         display(i);
@@ -209,13 +209,12 @@ public class FrameDotsServer extends JFrame implements Runnable{
       }
     }
 
-    // o jogador 1 será suspenso até que o jogador 2 conecte
-    //O jodagor 1 reassume agora.
+    // player 1 is suspended until the player 2 get connected
     try{
 
-      synchronized (jogadores[0]){
-        jogadores[0].threadSuspended = false;
-        jogadores[0].notify();
+      synchronized (players[0]){
+        players[0].threadSuspended = false;
+        players[0].notify();
 
       }
     }
@@ -225,89 +224,89 @@ public class FrameDotsServer extends JFrame implements Runnable{
 
   }
 
-  public void restartServidor(){
+  public void restartServer(){
 
-    //desconecta ServerSocket
+    // Disconnect ServerSocket
       try{
-        servidor.close();
-        jogadorCorrente = 0;
-        tabuleiro.initBoard();
+        server.close();
+        currentPlayer = 0;
+        board.initBoard();
       }
       catch (Exception e){
 
       }
 
-       //configura ServerSocket
+       // ServerSocket
       try{
-        servidor = new ServerSocket(5000, 2);
+        server = new ServerSocket(5000, 2);
       }
       catch (IOException e1){
-         JOptionPane.showMessageDialog(null, "Ocorreu um erro durante a conexão!","Jogo Dots!",
+         JOptionPane.showMessageDialog(null, "Connection error!","Jogo Dots!",
 	                            JOptionPane.INFORMATION_MESSAGE);
          System.exit(1);
       }
 
 
-      jlStatus.setText("conectado, esperando conexões...");
+      jlStatus.setText("connected, waiting for connections...");
       jlStatus.setFont(new java.awt.Font("Dialog", 1, 12));
       jlStatus.setForeground(Color.blue);
 
       jlStatus1.setFont(new java.awt.Font("Dialog", 1, 12));
       jlStatus1.setForeground(Color.red);
-      jlStatus1.setText("desconectado...");
+      jlStatus1.setText("disconnected.");
 
       jlStatus2.setFont(new java.awt.Font("Dialog", 1, 12));
       jlStatus2.setForeground(Color.red);
-      jlStatus2.setText("desconectado...");
+      jlStatus2.setText("disconnected.");
 
-      jbDesconectar.setEnabled(true);
-      jbConectar.setEnabled(false);
+      jbDisconnect.setEnabled(true);
+      jbConnect.setEnabled(false);
 
-      jbDesconectar.requestFocus();
+      jbDisconnect.requestFocus();
 
-      t1 = new Thread(this);
-      t1.start();
+      thread = new Thread(this);
+      thread.start();
 
   }
 
    public void display(int numJogador){
 
     if (numJogador == 0){
-      jlStatus.setText("conectado, esperando conexão...");
+      jlStatus.setText("connected, waiting for connections...");
       jlStatus.setFont(new java.awt.Font("Dialog", 1, 12));
       jlStatus.setForeground(Color.blue);
 
-      jlStatus1.setText("conectado, esperando adversário ...");
+      jlStatus1.setText("connected, waiting for opponent...");
       jlStatus1.setFont(new java.awt.Font("Dialog", 1, 12));
       jlStatus1.setForeground(Color.blue);
 
-      jlStatus2.setText("desconectado ...");
+      jlStatus2.setText("disconnected.");
       jlStatus2.setFont(new java.awt.Font("Dialog", 1, 12));
       jlStatus2.setForeground(Color.red);
     }
 
     else{
 
-      jlStatus.setText("conectado, jogo em execução...");
+      jlStatus.setText("connected, playing...");
       jlStatus.setFont(new java.awt.Font("Dialog", 1, 12));
       jlStatus.setForeground(Color.blue);
 
-      jlStatus1.setText("conectado ...");
+      jlStatus1.setText("connected.");
       jlStatus1.setFont(new java.awt.Font("Dialog", 1, 12));
       jlStatus1.setForeground(Color.blue);
 
-      jlStatus2.setText("conectado ...");
+      jlStatus2.setText("connected.");
       jlStatus2.setFont(new java.awt.Font("Dialog", 1, 12));
       jlStatus2.setForeground(Color.blue);
     }
 
   }
 
-  //Determina se um movimento é válido.
-  public synchronized boolean isValidMove(int linha, int coluna, int jogador,
-                                              char matriz){
+  // Is valid move
+  public synchronized boolean isValidMove(int row, int column, int player,
+                                              char direction){
 
-    while (jogador != jogadorCorrente){
+    while (player != currentPlayer){
 
       try{
         wait();
@@ -318,37 +317,37 @@ public class FrameDotsServer extends JFrame implements Runnable{
 
     }
 
-    if (!(ocupado(linha, coluna, matriz))){
+    if (!(isDashed(row, column, direction))){
 
-      if (matriz == 'H') {
+      if (direction == 'H') {
 
-        tabuleiro.setHorizontalDash(linha, coluna);
+        board.setHorizontalDash(row, column);
 
-        if(!(tabuleiro.markDash(linha, coluna, jogadorCorrente,'H'))){
-          jogadorCorrente = (jogadorCorrente + 1) % 2;
-          jogadores[jogadorCorrente].opponentMove(linha, coluna, matriz);
+        if(!(board.markDash(row, column, currentPlayer,'H'))){
+          currentPlayer = (currentPlayer + 1) % 2;
+          players[currentPlayer].opponentMove(row, column, direction);
           notify();
         }
 
         else{
-            int jogadorAdversario = (jogadorCorrente + 1) % 2;
-            jogadores[jogadorAdversario].opponentMove(linha, coluna, matriz);
+            int opponentPlayer = (currentPlayer + 1) % 2;
+            players[opponentPlayer].opponentMove(row, column, direction);
         }
       }
 
       else {
 
-        tabuleiro.setVerticalDash(linha, coluna);
+        board.setVerticalDash(row, column);
 
-        if(!(tabuleiro.markDash(linha, coluna, jogadorCorrente,'V'))){
-          jogadorCorrente = (jogadorCorrente + 1) % 2;
-          jogadores[jogadorCorrente].opponentMove(linha, coluna, matriz);
+        if(!(board.markDash(row, column, currentPlayer,'V'))){
+          currentPlayer = (currentPlayer + 1) % 2;
+          players[currentPlayer].opponentMove(row, column, direction);
           notify();
        }
 
        else{
-           int jogadorAdversario = (jogadorCorrente + 1) % 2;
-           jogadores[jogadorAdversario].opponentMove(linha, coluna, matriz);
+           int opponentPlayer = (currentPlayer + 1) % 2;
+           players[opponentPlayer].opponentMove(row, column, direction);
        }
 
       }
@@ -359,75 +358,75 @@ public class FrameDotsServer extends JFrame implements Runnable{
 
   }
 
-  public boolean ocupado(int linha, int coluna, char matriz){
-    if (matriz == 'H') return tabuleiro.getHorizontalDash(linha, coluna);
-    else return tabuleiro.getVerticalDash(linha, coluna);
+  public boolean isDashed(int row, int column, char direction){
+    if (direction == 'H') return board.getHorizontalDash(row, column);
+    else return board.getVerticalDash(row, column);
   }
 
-   public boolean markAsClosed(int linha, int coluna, char matriz){
-      return tabuleiro.isClosed(linha, coluna, matriz);
+   public boolean markAsClosed(int row, int column, char direction){
+      return board.isClosed(row, column, direction);
   }
 
   public boolean gameOver(){
 
-      if (tabuleiro.isBoardCompleted()){
+      if (board.isBoardCompleted()){
         for (int i = 0; i < 2; i++)
-           jogadores[i].sendGameOver();
+           players[i].sendGameOver();
 
-        restartServidor();
+        restartServer();
         return true;
       }
       return false;
 
   }
 
-  public void finalizou(){
+  public void finish(){
 
     for (int i = 0; i < 2; i++){
 
       try{
-        jogadores[i].sendGameHasFinished();
+        players[i].sendGameHasFinished();
       }
       catch(Exception e){
       }
 
     }
-    restartServidor();
+    restartServer();
 
   }
 
 
-  void jbDesconectar_actionPerformed(ActionEvent e) {
+  void jbDisconnect_actionPerformed(ActionEvent e) {
 
-    //desconecta ServerSocket
+    // Close ServerSocket
       try{
-          finalizou();
-          servidor.close();
+          finish();
+          server.close();
       }
 
       catch (IOException e1){
 
       }
 
-      jlStatus.setText("desconectado...");
+      jlStatus.setText("disconnected.");
       jlStatus.setFont(new java.awt.Font("Dialog", 1, 12));
       jlStatus.setForeground(Color.red);
 
-      jlStatus1.setText("desconectado...");
+      jlStatus1.setText("disconnected.");
       jlStatus1.setFont(new java.awt.Font("Dialog", 1, 12));
       jlStatus1.setForeground(Color.red);
 
-      jlStatus2.setText("desconectado...");
+      jlStatus2.setText("disconnected.");
       jlStatus2.setFont(new java.awt.Font("Dialog", 1, 12));
       jlStatus2.setForeground(Color.red);
 
-      jbDesconectar.setEnabled(false);
-      jbConectar.setEnabled(true);
-      jbConectar.requestFocus();
+      jbDisconnect.setEnabled(false);
+      jbConnect.setEnabled(true);
+      jbConnect.requestFocus();
 
   }
 
-  void jbSair_actionPerformed(ActionEvent e) {
+  void jbExit_actionPerformed(ActionEvent e) {
 
       this.dispose();
       System.exit(0);
