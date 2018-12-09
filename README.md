@@ -12,10 +12,10 @@ TOC
 
 To execute the server run the following command:
 ```
-java -classpath .\bin\ jogodots.FrameServidorDots
+java -classpath .\bin\ jogodots.FrameDotsServer
 ```
 
-Click on button "Conectar" to accept connections.
+Click on button "Connect" to accept connections.
 
 ![01-server-init](https://github.com/thiagohb/jogodots/blob/master/jogodots/man/images/01-server-init.png)
 ![02-server-waiting-player1](https://github.com/thiagohb/jogodots/blob/master/jogodots/man/images/02-server-waiting-player1.png)
@@ -25,7 +25,7 @@ Click on button "Conectar" to accept connections.
 
 To execute the client run the following command:
 ```
-java -classpath .\bin\ jogodots.Controlador
+java -classpath .\bin\ jogodots.Controller
 ```
 
 ![23-client1-5th-dash](https://github.com/thiagohb/jogodots/blob/master/jogodots/man/images/23-client1-5th-dash.png)
