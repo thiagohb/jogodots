@@ -77,20 +77,20 @@ public class Player extends Thread{
 
       //playing
       while (!exit){
-        char matrix = input.readChar();
+        char direction = input.readChar();
         int row = input.readInt();
         int column = input.readInt();
 
-        if (matrix == 'F'){
+        if (direction == 'F'){
           exit = true;
           control.finalizou();
         }
 
         else{
 
-          if(control.isValidMove(row, column, numberOfPlayers, matrix)){
+          if(control.isValidMove(row, column, numberOfPlayers, direction)){
             output.writeUTF("Valid move");
-            output.writeBoolean(control.markAsClosed(row, column, matrix));
+            output.writeBoolean(control.markAsClosed(row, column, direction));
           }
           else
             output.writeUTF("Invalid move");

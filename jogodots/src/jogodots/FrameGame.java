@@ -6,22 +6,22 @@ import javax.swing.*;
 
 public class FrameGame extends JFrame {
 
-  int rows, columns;
-  Controller controlador;
+  private int rows, columns;
+  private Controller controller;
 
-  JPanel contentPane;
-  BorderLayout borderLayout1 = new BorderLayout();
-  JPanel jpSul = new JPanel();
-  JPanel jpMensagens = new JPanel();
-  GridLayout gridLayout1 = new GridLayout();
-  JLabel jlMensagens = new JLabel();
-  JPanel jpBotoes = new JPanel();
-  JButton jbSair = new JButton();
-  JButton jbAjuda = new JButton();
-  JPanel jpPontos = new JPanel(){
+  private JPanel jpContent;
+  private BorderLayout borderLayout1 = new BorderLayout();
+  private JPanel jpSouth = new JPanel();
+  private JPanel jpMessages = new JPanel();
+  private GridLayout gridLayout1 = new GridLayout();
+  private JLabel jlMessages = new JLabel();
+  private JPanel jpButtons = new JPanel();
+  private JButton jbExit = new JButton();
+  private JButton jbHelp = new JButton();
+  private JPanel jpBoard = new JPanel(){
     public void paint(Graphics g){
       super.paint(g);
-      desenha(g);
+      drawBoard(g);
     }
   };
 
@@ -31,7 +31,7 @@ public class FrameGame extends JFrame {
     try {
       this.rows = rows;
       this.columns = columns;
-      this.controlador = controller;
+      this.controller = controller;
       jbInit();
     }
     catch(Exception e) {
@@ -41,11 +41,11 @@ public class FrameGame extends JFrame {
   //Component initialization
   private void jbInit() throws Exception  {
 
-    contentPane = (JPanel) this.getContentPane();
-    contentPane.setLayout(borderLayout1);
+    jpContent = (JPanel) this.getContentPane();
+    jpContent.setLayout(borderLayout1);
     this.setSize(new Dimension(400, 400));
 
-    //Centraliza a janela
+    // Move the window to the center
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     Dimension frameSize = this.getSize();
     if (frameSize.height > screenSize.height) {
@@ -59,31 +59,31 @@ public class FrameGame extends JFrame {
 
 
     this.setTitle("Jogo Dots!");
-    jpSul.setLayout(gridLayout1);
+    jpSouth.setLayout(gridLayout1);
     gridLayout1.setRows(2);
-    jlMensagens.setText("");
-    jbSair.setText("Finalizar");
-    jbSair.addActionListener(new java.awt.event.ActionListener() {
+    jlMessages.setText("");
+    jbExit.setText("Exit");
+    jbExit.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        jbSair_actionPerformed(e);
+        jbExit_actionPerformed(e);
       }
     });
-    jbAjuda.setText("Ajuda");
-    contentPane.add(jpSul, BorderLayout.SOUTH);
-    jpSul.add(jpMensagens, null);
-    jpMensagens.add(jlMensagens, null);
-    jpSul.add(jpBotoes, null);
-    jpBotoes.add(jbSair, null);
-    jpBotoes.add(jbAjuda, null);
-    contentPane.add(jpPontos, BorderLayout.CENTER);
+    jbHelp.setText("Help");
+    jpContent.add(jpSouth, BorderLayout.SOUTH);
+    jpSouth.add(jpMessages, null);
+    jpMessages.add(jlMessages, null);
+    jpSouth.add(jpButtons, null);
+    jpButtons.add(jbExit, null);
+    jpButtons.add(jbHelp, null);
+    jpContent.add(jpBoard, BorderLayout.CENTER);
 
-    jpPontos.addMouseListener(new java.awt.event.MouseAdapter() {
+    jpBoard.addMouseListener(new java.awt.event.MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
-        jpPontos_mouseClicked(e);
+        jpBoard_mouseClicked(e);
       }
     });
 
-    jpPontos.repaint();
+    jpBoard.repaint();
     show();
 
   }
@@ -95,174 +95,175 @@ public class FrameGame extends JFrame {
     }
   }
 
+  // Mouse events
+  private void jpBoard_mouseClicked(MouseEvent e) {
 
-  //Eventos do MOUSE
-  void jpPontos_mouseClicked(MouseEvent e) {
+   if (controller.isMyTurn()){
 
-   if (controlador.isMyTurn()){
+    Dot dot = getDot(e.getX(), e.getY());
 
-    Dot p = avaliaCoordenadas(e.getX(), e.getY());
+    Dimension dimension = jpBoard.getSize();
+    double height = dimension.getHeight()/(rows +2);
+    double width = dimension.getWidth()/(columns +2);
 
-    Dimension d = jpPontos.getSize();
-    double altura = d.getHeight()/(rows +2);
-    double largura = d.getWidth()/(columns +2);
-
-    //Testa se a posição clicada está dentro dos limites do jogo
-    if ((e.getX() < largura) || (e.getX() > (d.getWidth()-largura)) ||
-        (e.getY() < altura) || (e.getY() > (d.getHeight()-altura))){}
+    // Test if the click is inside the board
+    if ((e.getX() < width) || (e.getX() > (dimension.getWidth()-width)) ||
+        (e.getY() < height) || (e.getY() > (dimension.getHeight()-height))){}
 
     else{
 
-      //Analisando a diferença + importante
-      int deltaX = e.getX()-p.getX();
-      int deltaY = e.getY()-p.getY();
-      int linhaTabela = e.getY()/((int)altura);
-      int colunaTabela = e.getX()/((int)largura);
+      // Getting the difference more important
+      int deltaX = e.getX()-dot.getX();
+      int deltaY = e.getY()-dot.getY();
+      int boardLine = e.getY()/((int)height);
+      int boardColumn = e.getX()/((int)width);
 
-      //Significa que a linha deve ser desenhada com o ponto
-      //a esquerda, acima ou abaixo
+      // Negative deltaX means the line should be drawn with the left, upper or bottom dot
       if (deltaX < 0){
 
-        //Significa que a linha deve ser desenhada com o ponto
-        //a esquerda ou acima
+        // Negative deltaY means the line should be drawn with the left or upper dot
         if (deltaY < 0){
 
-          if ((-deltaX) > (-deltaY)) {//Linha H a esq
-            controlador.markHorizontalDash(linhaTabela, colunaTabela - 1);
-            controlador.setOutput(linhaTabela, colunaTabela - 1, 'H');
+          if ((-deltaX) > (-deltaY)) {
+            // Left horizontal line
+            controller.markHorizontalDash(boardLine, boardColumn - 1);
+            controller.setOutput(boardLine, boardColumn - 1, 'H');
           }
-          else{ //Linha V acima
-            controlador.markVerticalDash(linhaTabela - 1, colunaTabela);
-            controlador.setOutput(linhaTabela - 1, colunaTabela, 'V');
+          else{
+            // Upper vertical line
+            controller.markVerticalDash(boardLine - 1, boardColumn);
+            controller.setOutput(boardLine - 1, boardColumn, 'V');
           }
         }
-        //Significa que a linha deve ser desenhada com o ponto
-        //a esquerda ou abaixo
+        // Positive deltaY means the line should be drawn with the left or bottom dot
         else {
-          if ((-deltaX) > deltaY) {//Linha H esq
-            controlador.markHorizontalDash(linhaTabela - 1, colunaTabela - 1);
-            controlador.setOutput(linhaTabela - 1, colunaTabela - 1, 'H');
+          if ((-deltaX) > deltaY) {
+            // Left horizontal line
+            controller.markHorizontalDash(boardLine - 1, boardColumn - 1);
+            controller.setOutput(boardLine - 1, boardColumn - 1, 'H');
           }
-          else {//Linha V abaixo
-            controlador.markVerticalDash(linhaTabela - 1, colunaTabela);
-            controlador.setOutput(linhaTabela - 1, colunaTabela, 'V');
+          else {
+            // Bottom vertical line
+            controller.markVerticalDash(boardLine - 1, boardColumn);
+            controller.setOutput(boardLine - 1, boardColumn, 'V');
           }
         }
       }
 
-      //Significa que a linha deve ser desenhada com o ponto
-      //a direita, acima ou abaixo -- deltaX positivo
+      // Positive deltaX means the line should be drawn with the right, upper or bottom dot
       else{
 
-        //Significa que a linha deve ser desenhada com o ponto
-        //a direita ou acima
+        // Negative deltaY means the line should be drawn with the right or upper dot
         if (deltaY < 0){
-          if (deltaX > (-deltaY)){// Linha H a dir
-            controlador.markHorizontalDash(linhaTabela, colunaTabela - 1);
-            controlador.setOutput(linhaTabela, colunaTabela - 1, 'H');
+          if (deltaX > (-deltaY)){
+            // Right horizontal line
+            controller.markHorizontalDash(boardLine, boardColumn - 1);
+            controller.setOutput(boardLine, boardColumn - 1, 'H');
           }
-          else { //Linha V acima
-            controlador.markVerticalDash(linhaTabela - 1, colunaTabela - 1);
-            controlador.setOutput(linhaTabela - 1, colunaTabela - 1, 'V');
+          else {
+            // Upper vertical line
+            controller.markVerticalDash(boardLine - 1, boardColumn - 1);
+            controller.setOutput(boardLine - 1, boardColumn - 1, 'V');
 
           }
         }
-        //Significa que a linha deve ser desenhada com o ponto
-        //a direita ou abaixo
+        // Positive deltaY means the line should be drawn with the right or bottom dot
         else {
-          if (deltaX > deltaY) {// Linha H a dir
-            controlador.markHorizontalDash(linhaTabela - 1, colunaTabela - 1);
-            controlador.setOutput(linhaTabela - 1, colunaTabela - 1, 'H');
+          if (deltaX > deltaY) {
+            // Right horizontal line
+            controller.markHorizontalDash(boardLine - 1, boardColumn - 1);
+            controller.setOutput(boardLine - 1, boardColumn - 1, 'H');
           }
-          else {//Linha V abaixo
-            controlador.markVerticalDash(linhaTabela - 1, colunaTabela-1);
-            controlador.setOutput(linhaTabela - 1, colunaTabela - 1, 'V');
+          else {
+            // Bottom vertical line
+            controller.markVerticalDash(boardLine - 1, boardColumn-1);
+            controller.setOutput(boardLine - 1, boardColumn - 1, 'V');
           }
         }
       }
 
-      jpPontos.repaint();
+      jpBoard.repaint();
     }
    }
   }
 
+  private void drawBoard(Graphics graphics){
+
+    Dimension dimension = jpBoard.getSize();
+    double height = dimension.getHeight()/(rows +2);
+    double width = dimension.getWidth()/(columns +2);
+    int verticalPadding = (int)height/5;
+    int horizontalPadding = (int)width/5;
 
 
-  void desenha(Graphics g){
+    // Draw the dots
+    for (double i = width; i <= ((columns +1)*width) + (width/10); i += width)
+      for (double j = height; j <= ((rows +1)*height) + (height/10); j += height)
+        graphics.fillOval((int)i, (int)j, 5, 5);
 
-    Dimension d = jpPontos.getSize();
-    double altura = d.getHeight()/(rows +2);
-    double largura = d.getWidth()/(columns +2);
-    int espVert = (int)altura/5;
-    int espHoriz = (int)largura/5;
-
-
-    //Desenha os pontos
-    for (double i = largura; i <= ((columns +1)*largura) + (largura/10); i += largura)
-      for (double j = altura; j <= ((rows +1)*altura) + (altura/10); j += altura)
-        g.fillOval((int)i, (int)j, 5, 5);
-
-    //Desenha as rows horizontais
-    for (double i = largura; i <= columns *largura; i += largura)
-      for (double j = altura; j <= (rows +1)*altura; j += altura)
-        if (controlador.isHorizontalDash(((int)j/((int)altura))-1, ((int)i/((int)largura))-1))
-          g.drawLine((int)i, (int)(j+2), (int)(i+largura), (int)(j+2));
+    // Draw the horizontal dashes
+    for (double i = width; i <= columns *width; i += width)
+      for (double j = height; j <= (rows +1)*height; j += height)
+        if (controller.isHorizontalDash(((int)j/((int)height))-1, ((int)i/((int)width))-1))
+          graphics.drawLine((int)i, (int)(j+2), (int)(i+width), (int)(j+2));
 
 
-    //Desenha as rows verticais
-    for (double i = largura; i <= (columns +1)*largura; i += largura)
-      for (double j = altura; j <= rows *altura; j += altura)
-        if (controlador.isVerticalDash(((int)j/((int)altura))-1, ((int)i/((int)largura))-1))
-          g.drawLine((int)i+2, (int)j, (int)(i+2), (int)(j+altura));
+    // Draw the vertical dashes
+    for (double i = width; i <= (columns +1)*width; i += width)
+      for (double j = height; j <= rows *height; j += height)
+        if (controller.isVerticalDash(((int)j/((int)height))-1, ((int)i/((int)width))-1))
+          graphics.drawLine((int)i+2, (int)j, (int)(i+2), (int)(j+height));
 
 
-    //Desenha os marcadores
-    for (double i = largura; i <= columns *largura; i += largura)
-      for (double j = altura; j <= rows *altura; j += altura)
-        if (controlador.getMarkers(((int)j/((int)altura))-1, ((int)i/((int)largura))-1) == 1){
-          g.setColor(Color.red);
-          g.drawOval((int)(i + espHoriz), (int)(j + espVert), ((int)largura) - (espHoriz + espHoriz/3), ((int)altura) - (espVert + espVert/3));
+    // Draw the markers
+    for (double i = width; i <= columns *width; i += width)
+      for (double j = height; j <= rows *height; j += height)
+        if (controller.getMarkers(((int)j/((int)height))-1, ((int)i/((int)width))-1) == 1){
+          graphics.setColor(Color.red);
+          graphics.drawOval((int)(i + horizontalPadding), (int)(j + verticalPadding), ((int)width) - (horizontalPadding + horizontalPadding/3), ((int)height) - (verticalPadding + verticalPadding/3));
         }
-        else if (controlador.getMarkers(((int)j/((int)altura))-1, ((int)i/((int)largura))-1) == 2){
-          g.setColor(Color.blue);
-          g.drawOval((int)(i + espHoriz), (int)(j + espVert), ((int)largura) - (espHoriz + espHoriz/3), ((int)altura) - (espVert + espVert/3));
+        else if (controller.getMarkers(((int)j/((int)height))-1, ((int)i/((int)width))-1) == 2){
+          graphics.setColor(Color.blue);
+          graphics.drawOval((int)(i + horizontalPadding), (int)(j + verticalPadding), ((int)width) - (horizontalPadding + horizontalPadding/3), ((int)height) - (verticalPadding + verticalPadding/3));
         }
   }
 
-  Dot avaliaCoordenadas(int x, int y){
+  private Dot getDot(int x, int y){
 
-    Dimension d = jpPontos.getSize();
-    double altura = d.getHeight()/(rows +2);
-    double largura = d.getWidth()/(columns +2);
-    double rx, ry;  //restos da divisão
-    int dx, dy;     //parte inteira da divisão
-    Dot p = new Dot();
+    Dimension dimension = jpBoard.getSize();
+    double height = dimension.getHeight()/(rows +2);
+    double width = dimension.getWidth()/(columns +2);
+    // remainders of division
+    double rx, ry;
+    // quotient of division
+    int dx, dy;
+    Dot dot = new Dot();
 
-    rx = ((double) x) % largura;
-    ry = ((double) y) % altura;
+    rx = ((double) x) % width;
+    ry = ((double) y) % height;
 
-    dx = (int)((double) x / largura);
-    dy = (int)((double)y / altura);
+    dx = (int)((double) x / width);
+    dy = (int)((double)y / height);
 
-    if ((rx >= largura / 2.0) && (dx <= rows)) p.setX((dx+1)*((int)largura));
-    else  p.setX(dx*((int)largura));
+    if ((rx >= width / 2.0) && (dx <= rows)) dot.setX((dx+1)*((int)width));
+    else  dot.setX(dx*((int)width));
 
-    if ((ry >= altura / 2.0) && (dy <= columns)) p.setY((dy+1)*((int)altura));
-    else p.setY(dy*((int)altura));
+    if ((ry >= height / 2.0) && (dy <= columns)) dot.setY((dy+1)*((int)height));
+    else dot.setY(dy*((int)height));
 
-    return p;
+    return dot;
   }
 
-  void jbSair_actionPerformed(ActionEvent e) {
-       controlador.setOutput(-1,-1,'F');
+  void jbExit_actionPerformed(ActionEvent e) {
+       controller.setOutput(-1,-1,'F');
   }
 
   public void updateLabel(String s){
-    jlMensagens.setText(s);
+    jlMessages.setText(s);
   }
 
   public void updateScreen(){
-    jpPontos.repaint();
+    jpBoard.repaint();
   }
   public void setBoardSize(int boardSize){
     rows = columns = boardSize;
