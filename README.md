@@ -12,7 +12,7 @@ TOC
 
 To execute the server run the following command:
 ```
-java -classpath .\bin\ jogodots.FrameDotsServer
+java -classpath .\bin\ br.thbsw.jogodots.app.ServerApp
 ```
 
 Click on button "Connect" to accept connections.
@@ -25,7 +25,7 @@ Click on button "Connect" to accept connections.
 
 To execute the client run the following command:
 ```
-java -classpath .\bin\ jogodots.Controller
+java -classpath .\bin\ br.thbsw.jogodots.app.ClientApp
 ```
 
 ![23-client1-5th-dash](https://github.com/thiagohb/jogodots/blob/master/jogodots/man/images/23-client1-5th-dash.png)
