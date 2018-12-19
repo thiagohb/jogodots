@@ -1,4 +1,8 @@
-package jogodots;
+package br.thbsw.jogodots.controller;
+
+import br.thbsw.jogodots.model.Board;
+import br.thbsw.jogodots.view.FrameGame;
+import br.thbsw.jogodots.view.Messages;
 
 import javax.swing.*;
 import java.net.*;
@@ -27,8 +31,8 @@ public class Controller implements Runnable{
 
         try {
 
-            String serverIP = JOptionPane.showInputDialog(null, "Server IP: ",
-	      	              "Jogo Dots!",JOptionPane.QUESTION_MESSAGE);
+            String serverIP = (String) JOptionPane.showInputDialog(null, "Server IP: ",
+                    Messages.TITLE, JOptionPane.QUESTION_MESSAGE, null, null, "127.0.0.1");
             if (serverIP != null){
 
                 connection = new Socket(InetAddress.getByName(serverIP), 5000 );
@@ -46,10 +50,10 @@ public class Controller implements Runnable{
         catch ( IOException e ) {
 
               if (e.toString().equals("java.net.ConnectException: Connection refused: connect"))
-                    JOptionPane.showMessageDialog(null, "Server disconnected!","Jogo Dots!",
+                    JOptionPane.showMessageDialog(null, "Server disconnected!", Messages.TITLE,
 	                                JOptionPane.INFORMATION_MESSAGE);
 
-             else JOptionPane.showMessageDialog(null, "Server IP is not correct!","Jogo Dots!",
+             else JOptionPane.showMessageDialog(null, "Server IP is not correct!", Messages.TITLE,
 	                                JOptionPane.INFORMATION_MESSAGE);
         }
     }
@@ -123,8 +127,8 @@ public class Controller implements Runnable{
     }
 
     catch(IOException e){
-        JOptionPane.showMessageDialog(null, "Connection error!","Jogo Dots!",
-	                            JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, Messages.MSG_CONNECTION_ERROR, Messages.TITLE,
+	                            JOptionPane.ERROR_MESSAGE);
         System.exit(1);
     }
 
@@ -140,8 +144,8 @@ public class Controller implements Runnable{
       }
 
       catch(IOException e){
-       JOptionPane.showMessageDialog(null, "Connection error!","Jogo Dots!",
-	                            JOptionPane.INFORMATION_MESSAGE);
+       JOptionPane.showMessageDialog(null, Messages.MSG_CONNECTION_ERROR, Messages.TITLE,
+	                            JOptionPane.ERROR_MESSAGE);
        System.exit(1);
       }
 
@@ -160,7 +164,7 @@ public class Controller implements Runnable{
         try{
 
           String size = JOptionPane.showInputDialog(null, "Board size (2 to 15): ",
-	  	       "Jogo Dots!",JOptionPane.QUESTION_MESSAGE);
+                  Messages.TITLE, JOptionPane.QUESTION_MESSAGE);
 
           // Size that the player has chosen
           if (size != null) rows = columns = Integer.parseInt(size);
@@ -170,7 +174,7 @@ public class Controller implements Runnable{
 
           if ((rows < 2) || (rows > 15)){
            running = true;
-           JOptionPane.showMessageDialog(null, "Invalid board size!","Jogo Dots!",
+           JOptionPane.showMessageDialog(null, "Invalid board size!", Messages.TITLE,
 	                            JOptionPane.INFORMATION_MESSAGE);
 
           }
@@ -183,13 +187,13 @@ public class Controller implements Runnable{
         }
 
         catch(IOException e){
-          JOptionPane.showMessageDialog(null, "Connection error!","Jogo Dots!",
-	                              JOptionPane.INFORMATION_MESSAGE);
+          JOptionPane.showMessageDialog(null, Messages.MSG_CONNECTION_ERROR, Messages.TITLE,
+	                              JOptionPane.ERROR_MESSAGE);
           System.exit(1);
         }
 
         catch(NumberFormatException e){
-          JOptionPane.showMessageDialog(null, "Invalid size number!","Jogo Dots!",
+          JOptionPane.showMessageDialog(null, "Invalid size number!", Messages.TITLE,
 	                            JOptionPane.INFORMATION_MESSAGE);
 
           running = true;
@@ -235,8 +239,8 @@ public class Controller implements Runnable{
       }
 
       catch(IOException e){
-       JOptionPane.showMessageDialog(null, "Connection error!","Jogo Dots!",
-	                            JOptionPane.INFORMATION_MESSAGE);
+       JOptionPane.showMessageDialog(null, Messages.MSG_CONNECTION_ERROR, Messages.TITLE,
+	                            JOptionPane.ERROR_MESSAGE);
        System.exit(1);
       }
 
@@ -305,7 +309,7 @@ public class Controller implements Runnable{
             output += " Final:\n\n Player 1: " + player1NumberOfPoints + " points\n" +
                       " Player 2: " + player2NumberOfPoints + " points\n\n " + winner;
 
-            JOptionPane.showMessageDialog(null, output,"Jogo Dots!",
+            JOptionPane.showMessageDialog(null, output, Messages.TITLE,
 	                            JOptionPane.INFORMATION_MESSAGE);
 
             frameGame.dispose();
@@ -317,7 +321,7 @@ public class Controller implements Runnable{
             frameGame.updateLabel(message);
          }
          else if (message.equals("Finished")){
-            JOptionPane.showMessageDialog(null, "The game has finished!","Jogo Dots!",
+            JOptionPane.showMessageDialog(null, "The game has finished!", Messages.TITLE,
 	                            JOptionPane.INFORMATION_MESSAGE);
             frameGame.dispose();
             System.exit(0);
@@ -344,8 +348,8 @@ public class Controller implements Runnable{
       }
 
       catch(IOException e){
-       JOptionPane.showMessageDialog(null, "Connection error!","Jogo Dots!",
-	                            JOptionPane.INFORMATION_MESSAGE);
+       JOptionPane.showMessageDialog(null, Messages.MSG_CONNECTION_ERROR, Messages.TITLE,
+	                            JOptionPane.ERROR_MESSAGE);
        System.exit(1);
       }
 
@@ -358,8 +362,4 @@ public class Controller implements Runnable{
     return myTurn;
   }
 
-  public static void main(String[] args) {
-
-    Controller c = new Controller();
-  }
 }

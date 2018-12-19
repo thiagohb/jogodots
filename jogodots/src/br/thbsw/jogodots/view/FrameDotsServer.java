@@ -1,4 +1,7 @@
-package jogodots;
+package br.thbsw.jogodots.view;
+
+import br.thbsw.jogodots.controller.Player;
+import br.thbsw.jogodots.model.Board;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -68,7 +71,7 @@ public class FrameDotsServer extends JFrame implements Runnable{
     titledBorder3 = new TitledBorder("");
     jpContent.setLayout(borderLayout1);
     this.setSize(new Dimension(310, 200));
-    this.setTitle("Server Jogo Dots!");
+    this.setTitle(Messages.TITLE);
 
      //Centraliza a janela
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -163,7 +166,7 @@ public class FrameDotsServer extends JFrame implements Runnable{
         server = new ServerSocket(5000, 2);
       }
       catch (IOException e1){
-         JOptionPane.showMessageDialog(null, "Connection error!","Jogo Dots!",
+         JOptionPane.showMessageDialog(null, Messages.MSG_CONNECTION_ERROR, Messages.TITLE,
 	                            JOptionPane.INFORMATION_MESSAGE);
          System.exit(1);
       }
@@ -241,8 +244,8 @@ public class FrameDotsServer extends JFrame implements Runnable{
         server = new ServerSocket(5000, 2);
       }
       catch (IOException e1){
-         JOptionPane.showMessageDialog(null, "Connection error!","Jogo Dots!",
-	                            JOptionPane.INFORMATION_MESSAGE);
+         JOptionPane.showMessageDialog(null, Messages.MSG_CONNECTION_ERROR, Messages.TITLE,
+	                            JOptionPane.ERROR_MESSAGE);
          System.exit(1);
       }
 
@@ -432,14 +435,4 @@ public class FrameDotsServer extends JFrame implements Runnable{
       System.exit(0);
   }
 
-   public static void main(String[] args) {
-
-       try {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-       }
-       catch(Exception e) {
-        e.printStackTrace();
-       }
-       new FrameDotsServer();
-  }
 }

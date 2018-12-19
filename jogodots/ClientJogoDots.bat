@@ -1,1 +1,1 @@
-java -classpath .\bin\ jogodots.Controller
+java -classpath .\bin\ br.thbsw.jogodots.app.ClientApp

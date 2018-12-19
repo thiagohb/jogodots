@@ -1,4 +1,7 @@
-package jogodots;
+package br.thbsw.jogodots.controller;
+
+import br.thbsw.jogodots.view.FrameDotsServer;
+import br.thbsw.jogodots.view.Messages;
 
 import javax.swing.*;
 import java.net.*;
@@ -10,7 +13,7 @@ public class Player extends Thread{
   private DataInputStream input;
   private DataOutputStream output;
   private FrameDotsServer control;
-  boolean threadSuspended = true;
+  public boolean threadSuspended = true;
   private int numberOfPlayers;
 
 
@@ -25,8 +28,8 @@ public class Player extends Thread{
 
     }
     catch(IOException e){
-      JOptionPane.showMessageDialog(null, "Connection error!","Jogo Dots!",
-	                            JOptionPane.INFORMATION_MESSAGE);
+      JOptionPane.showMessageDialog(null, Messages.MSG_CONNECTION_ERROR, Messages.TITLE,
+	                            JOptionPane.ERROR_MESSAGE);
       System.exit(1);
     }
 
@@ -44,8 +47,8 @@ public class Player extends Thread{
 
     }
     catch(IOException e){
-     JOptionPane.showMessageDialog(null, "Connection error!","Jogo Dots!",
-	                            JOptionPane.INFORMATION_MESSAGE);
+     JOptionPane.showMessageDialog(null, Messages.MSG_CONNECTION_ERROR, Messages.TITLE,
+	                            JOptionPane.ERROR_MESSAGE);
     }
 
   }

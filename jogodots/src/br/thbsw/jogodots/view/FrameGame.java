@@ -1,4 +1,7 @@
-package jogodots;
+package br.thbsw.jogodots.view;
+
+import br.thbsw.jogodots.controller.Controller;
+import br.thbsw.jogodots.model.Dot;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -58,7 +61,7 @@ public class FrameGame extends JFrame {
     this.setVisible(true);
 
 
-    this.setTitle("Jogo Dots!");
+    this.setTitle(Messages.TITLE);
     jpSouth.setLayout(gridLayout1);
     gridLayout1.setRows(2);
     jlMessages.setText("");
